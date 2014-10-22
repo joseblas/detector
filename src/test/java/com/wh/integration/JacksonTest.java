@@ -21,8 +21,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wh.integration.model.TwitterMessage;
-import com.wh.integration.model.TwitterMessages;
+import com.wh.integration.model.xml.TwitterMessage;
+import com.wh.integration.model.xml.TwitterMessages;
 import com.wh.integration.support.JaxbJacksonObjectMapper;
 
 /**

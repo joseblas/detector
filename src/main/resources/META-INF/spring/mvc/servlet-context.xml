@@ -99,9 +99,9 @@
 	<bean id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
 		<property name="classesToBeBound">
 			<list>
-				<value>com.wh.integration.model.TwitterMessage</value>
-				<value>com.wh.integration.model.TwitterMessages</value>
-				<value>com.wh.integration.model.TwitterAdapterStatus</value>
+				<value>com.wh.integration.model.xml.TwitterMessage</value>
+				<value>com.wh.integration.model.xml.TwitterMessages</value>
+				<value>com.wh.integration.model.xml.TwitterAdapterStatus</value>
 			</list>
 		</property>
 	</bean>

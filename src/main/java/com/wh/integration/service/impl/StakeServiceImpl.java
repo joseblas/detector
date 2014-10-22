@@ -6,15 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -24,8 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.TweetData;
 
-import com.wh.integration.model.TwitterMessage;
+
+import com.wh.integration.model.dao.TwitterMessageDao;
+import com.wh.integration.model.entity.TwitterMessage;
 import com.wh.integration.service.StakeService;
 
 public class StakeServiceImpl implements StakeService {
@@ -34,82 +30,52 @@ public class StakeServiceImpl implements StakeService {
 	// @Qualifier("controlBusChannel")
 	// private DirectChannel channel;
 
+	@Autowired
+	protected TwitterMessageDao dao;
+	
 	@Autowired 
 	private ApplicationContext applicationContext;
 	
 	private static Logger log = LoggerFactory.getLogger(StakeServiceImpl.class);
-	static Set<Long> persisted ;
+	
 
-	static {
-		try {
-			init();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	static void init() throws Exception {
-		persisted = new HashSet<Long>();
-		Path path = Paths.get("/home/joseta/tws.txt");
-		if (!Files.exists(path)) {
-			Files.createFile(path);
-		}
-		List<String> readAllLines = Files.readAllLines(path,
-				StandardCharsets.UTF_8);
-		for (String tmp : readAllLines) {
-			persisted.add(Long.parseLong(tmp));
-		}
-	}
-
-	static void end() {
-		List<String> data = new ArrayList<>();
-		for (Long id : persisted) {
-			data.add(String.valueOf(id));
-		}
-		Path path = Paths.get("/home/joseta/tws.txt");
-		try {
-			Files.delete(path);
-
-			Files.createFile(path);
-			Files.write(path, data, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public TwitterMessage send(Tweet t) {
-		String response = String.format("Hola %s, lorem upsum %s blah blah blah %s", t.getFromUser(),t.getInReplyToStatusId(),t.getLanguageCode());
-		TwitterMessage tm = new TwitterMessage();
-		tm.setText(response);
-		tm.setCreatedAt(new Date());
-		tm.setFromUser("joseblas");
+	
+	public TweetData send(TwitterMessage t) {
+		String response = String.format("Hola %s, lorem upsum ", t.getFromUser());
 		
-		return tm;
+		TweetData td = new TweetData(response);
+		td.atPlace("Where is  my bus?");
+		td.atLocation(34, 32);
+		td.inReplyToStatus(t.getId());
+		
+		return td;
 		
 	}
 	
-	public Tweet read(Tweet t) {
+	public com.wh.integration.model.entity.TwitterMessage transformAndSave(Tweet t) {
+		
+		log.info("dao " + dao);
+		com.wh.integration.model.entity.TwitterMessage findById = dao.findById(t.getId());
+		if( findById == null){
+			findById = new com.wh.integration.model.entity.TwitterMessage();
+			findById.setId(t.getId());
+			findById.setFromUser(t.getFromUser());
+			findById.setText(t.getText());
+			findById.setProfileImageUrl(t.getProfileImageUrl());
+			dao.save(findById);
+		}
 		
 		
 		log.info("msg " + t.getToUserId() + " " + t.getUser().getScreenName()
 				+ " " + t.getCreatedAt());
 		
-		// System.out.println("msg " + t.getText());
-		if(!persisted.contains(t.getId())){
-			persisted.add(t.getId());
-			
-			
-			
-			
-			
-			
-			
-		}
-		return t;
+		
+		
+		return findById;
 	}
+	
+	
+	
 
 	public String fetchLiveData(String bus, String stopcode, int up) {
 		String data = "http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1";
@@ -130,11 +96,12 @@ public class StakeServiceImpl implements StakeService {
 			e.printStackTrace();
 		}
 		
-		end();
+		
 
 		return "fetLiveData done!";
 	}
 
+	
 	public String fetLiveData() {
 		String data = "http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1";
 		data = "http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1?ReturnList=StopCode1,StopPointName,LineName,DestinationText,EstimatedTime,DirectionId,Bearing,LineName,VehicleID&LineID=133&DirectionID=1&StopCode1=50338";
@@ -148,7 +115,7 @@ public class StakeServiceImpl implements StakeService {
 				System.out.println("String " + str);
 			}
 
-			end();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
