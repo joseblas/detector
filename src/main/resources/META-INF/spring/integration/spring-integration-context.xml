@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:int-twitter="http://www.springframework.org/schema/integration/twitter"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/twitter http://www.springframework.org/schema/integration/twitter/spring-integration-twitter.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/task                http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/integration/twitter http://www.springframework.org/schema/integration/twitter/spring-integration-twitter.xsd
+		">
+
+	<context:component-scan base-package="com.wh.integration" />
+
+	<context:property-placeholder location="classpath:oauth.properties"/>
+
+	<int:channel id="controlBusChannel" />
+
+	<int:control-bus id="controlBus" input-channel="controlBusChannel" />
+	
+	
+	<!--  twitter  -->
+
+	<bean id="twitterTemplate"
+		class="org.springframework.social.twitter.api.impl.TwitterTemplate">
+		<constructor-arg value="${twitter.oauth.consumerKey}" />
+		<constructor-arg value="${twitter.oauth.consumerSecret}" />
+		<constructor-arg value="${twitter.oauth.accessToken}" />
+		<constructor-arg value="${twitter.oauth.accessTokenSecret}" />
+	</bean>
+	
+
+<!-- 	<int-twitter:inbound-channel-adapter id="twitterInbound" -->
+<!-- 		twitter-template="twitterTemplate" channel="sourceExtractor"> -->
+<!-- 		<int:poller fixed-rate="30000" max-messages-per-poll="3" /> -->
+<!-- 	</int-twitter:inbound-channel-adapter> -->
+
+
+	
+	<int-twitter:mentions-inbound-channel-adapter id="twitterInbound"
+		twitter-template="twitterTemplate"
+		channel="sourceExtractor">
+		<int:poller fixed-rate="30000" max-messages-per-poll="15" />
+	</int-twitter:mentions-inbound-channel-adapter>
+	
+	
+<!-- 	expression="payload" -->
+	<int:transformer input-channel="sourceExtractor" output-channel="twitterOut" 
+		ref="TlfService"
+		method="read" 
+		/>
+		
+	<int:filter input-channel="twitterOut" ref="selector" output-channel="output"
+		  	discard-channel="rejectedMessages"
+		  />
+
+ 	<bean id="selector" class="com.wh.integration.service.impl.BusMessageSelector"/>
+		
+		
+	<int:channel id="output"  />		
+	<int:logging-channel-adapter id="rejectedMessages" expression="payload.text"/>
+	
+	<int:transformer input-channel="output" output-channel="twitterOut" 
+		ref="TlfService"
+		method="send" 
+		/>
+	<int:channel id="twitterOut"  />	
+	<int-twitter:outbound-channel-adapter twitter-template="twitterTemplate"  channel="twitterOut" />
+	
+<!-- 	<int-twitter:outbound-channel-adapter twitter-template="twitterTemplate" channel="twitterOut" tweet-data-expression="new TweetData(payload).withMedia(headers.media).displayCoordinates(true)"/> -->
+	<!--  END twitter  -->
+	
+	<!-- Starting my tutorial -->
+	<!--  Poller printing date in log  -->
+<!-- 	<int:inbound-channel-adapter -->
+<!-- 		expression="new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(new java.util.Date())" -->
+<!-- 		channel="logger"> -->
+<!-- 		<int:poller max-messages-per-poll="1" trigger="tfLTrigger" /> -->
+<!-- 	</int:inbound-channel-adapter> -->
+
+	<bean id="tfLTrigger"
+		class="com.wh.integration.trigger.TfLTrigger">
+		<constructor-arg name="period" value="30000" />
+		<property name="initialDelay" value="5000"/>
+	</bean>
+
+	<int:logging-channel-adapter id="logger"
+		logger-name="com.wh.integration.trigger.TfLTrigger" />
+
+	<task:executor id="executor" queue-capacity="20"
+		pool-size="5-20" />
+	
+	
+	<!--  call custom poller class/method -->
+	<bean id="TlfService" class="com.wh.integration.service.impl.StakeServiceImpl"/>
+	<int:inbound-channel-adapter
+	 	id="fetchTfLData"
+		ref="TlfService"
+		method="fetLiveData"
+		channel="logger">
+		<int:poller max-messages-per-poll="1" trigger="tfLTrigger" />
+	</int:inbound-channel-adapter>
+	
+	
+		
+	</beans>
