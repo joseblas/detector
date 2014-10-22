@@ -41,7 +41,7 @@
 
 	<int-twitter:mentions-inbound-channel-adapter
 		id="twitterInbound" twitter-template="twitterTemplate" channel="sourceExtractor">
-		<int:poller fixed-rate="30000" max-messages-per-poll="150" />
+		<int:poller fixed-rate="1200000" max-messages-per-poll="150" />
 	</int-twitter:mentions-inbound-channel-adapter>
 
 
@@ -56,15 +56,15 @@
 
 
 	<int:channel id="output" />
-	<int:logging-channel-adapter id="rejectedMessages"
-		expression="'from ' +  payload.fromUser +  'hola'+ payload.text" />
+<!-- 	<int:logging-channel-adapter id="rejectedMessages" -->
+<!-- 		expression="'from ' +  payload.fromUser +  'hola'+ payload.text" /> -->
 
-	<int:transformer input-channel="output" output-channel="twitterOut"
+	<int:transformer input-channel="output" output-channel="pending"
 		ref="TlfService" method="send" />
 		
-	<int:channel id="twitterOut" />
+	<int:channel id="pending" />
 	<int-twitter:outbound-channel-adapter
-		twitter-template="twitterTemplate" channel="twitterOut" />
+		twitter-template="twitterTemplate" channel="pending" />
 
 	<!-- <int-twitter:outbound-channel-adapter twitter-template="twitterTemplate" 
 		channel="twitterOut" tweet-data-expression="new TweetData(payload).withMedia(headers.media).displayCoordinates(true)"/> -->

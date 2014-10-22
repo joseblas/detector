@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.TweetData;
-
 
 import com.wh.integration.model.dao.TwitterMessageDao;
 import com.wh.integration.model.entity.TwitterMessage;
@@ -41,11 +41,11 @@ public class StakeServiceImpl implements StakeService {
 
 	
 	public TweetData send(TwitterMessage t) {
-		String response = String.format("Hola %s, lorem upsum ", t.getFromUser());
+		String response = String.format("Hombre %s!, lorem upsum %s ", t.getFromUser(), new Random().nextInt());
 		
 		TweetData td = new TweetData(response);
-		td.atPlace("Where is  my bus?");
-		td.atLocation(34, 32);
+//		td.atPlace("Where is  my bus?");
+//		td.atLocation(34, 32);
 		td.inReplyToStatus(t.getId());
 		
 		return td;
