@@ -41,7 +41,7 @@
 
 	<int-twitter:mentions-inbound-channel-adapter
 		id="twitterInbound" twitter-template="twitterTemplate" channel="sourceExtractor">
-		<int:poller fixed-rate="500000" max-messages-per-poll="150" />
+		<int:poller fixed-rate="60010" max-messages-per-poll="150" />
 	</int-twitter:mentions-inbound-channel-adapter>
 
 
