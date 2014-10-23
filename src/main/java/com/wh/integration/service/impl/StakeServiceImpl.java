@@ -47,14 +47,14 @@ public class StakeServiceImpl implements StakeService {
 //		td.atPlace("Where is  my bus?");
 //		td.atLocation(34, 32);
 		td.inReplyToStatus(t.getId());
-		
+		System.out.println("sent " + t.getText() +  " " + t.getId() + " " + t.getIdentifier());
 		return td;
 		
 	}
 	
 	public com.wh.integration.model.entity.TwitterMessage transformAndSave(Tweet t) {
 		
-		log.info("dao " + dao);
+//		log.info("dao " + dao);
 		com.wh.integration.model.entity.TwitterMessage findById = dao.findById(t.getId());
 		if( findById == null){
 			findById = new com.wh.integration.model.entity.TwitterMessage();
@@ -65,9 +65,9 @@ public class StakeServiceImpl implements StakeService {
 			dao.save(findById);
 		}
 		
-		
-		log.info("msg " + t.getToUserId() + " " + t.getUser().getScreenName()
-				+ " " + t.getCreatedAt());
+//		
+//		log.info("msg " + t.getToUserId() + " " + t.getUser().getScreenName()
+//				+ " " + t.getCreatedAt());
 		
 		
 		

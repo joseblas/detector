@@ -35,6 +35,7 @@ public class BusMessageSelector implements MessageSelector {
 				//
 				findById.setSentAt(new Date());
 				dao.save(findById);
+				
 				return true;
 		}
 		return false;

@@ -41,7 +41,7 @@
 
 	<int-twitter:mentions-inbound-channel-adapter
 		id="twitterInbound" twitter-template="twitterTemplate" channel="sourceExtractor">
-		<int:poller fixed-rate="1200000" max-messages-per-poll="150" />
+		<int:poller fixed-rate="500000" max-messages-per-poll="150" />
 	</int-twitter:mentions-inbound-channel-adapter>
 
 
@@ -80,8 +80,8 @@
 	<!-- </int:inbound-channel-adapter> -->
 
 	<bean id="tfLTrigger" class="com.wh.integration.trigger.TfLTrigger">
-		<constructor-arg name="period" value="30000" />
-		<property name="initialDelay" value="5000" />
+		<constructor-arg name="period" value="3000000" />
+		<property name="initialDelay" value="500000" />
 	</bean>
 
 	<int:logging-channel-adapter id="logger"
