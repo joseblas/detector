@@ -123,77 +123,7 @@ public class StakeServiceImpl implements StakeService {
 		return "fetLiveData done!";
 	}
 
-	public String fetchData() {
-		String data = "http://data.tfl.gov.uk/tfl/syndication/feeds/journey-planner-timetables.zip?app_id=11fb4058&app_key=98eede397ce3580e4be444b78653d1ec";
-		try {
-			File dest = new File("/tmp/tfl");
-			unZip(new ZipInputStream(new URL(data).openStream()), dest);
-
-			File[] listFiles = dest.listFiles();
-			for (File f : listFiles) {
-				unZip(f, new File(dest.getAbsolutePath() + File.separator
-						+ "unzipped" + File.separator + f.getName()));
-			}
-			// get live data
-			// http://countdown.api.tfl.gov.uk/interfaces/ura/instant_V1
-		} catch (Exception e) {
-			log.error("Ex", e);
-		}
-
-		return "data";
-	}
-
-	private void unZip(File zipFile, File folder) throws FileNotFoundException {
-		unZip(new ZipInputStream(new FileInputStream(zipFile)), folder);
-	}
-
-	private void unZip(ZipInputStream zis, File folder) {
-
-		byte[] buffer = new byte[5 * 1024];
-
-		try {
-
-			// create output directory is not exists
-
-			if (!folder.exists()) {
-				folder.mkdir();
-			}
-
-			// get the zipped file list entry
-			ZipEntry ze = zis.getNextEntry();
-
-			while (ze != null) {
-
-				String fileName = ze.getName();
-				File newFile = new File(folder, fileName);
-
-				System.out.println("file unzip : " + newFile.getAbsoluteFile());
-
-				// create all non exists folders
-				// else you will hit FileNotFoundException for compressed folder
-				new File(newFile.getParent()).mkdirs();
-
-				FileOutputStream fos = new FileOutputStream(newFile);
-
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-				}
-
-				fos.close();
-				ze = zis.getNextEntry();
-			}
-
-			zis.closeEntry();
-			zis.close();
-
-			System.out.println("Done");
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-	}
+	
 
 	public static void main(String[] args) {
 

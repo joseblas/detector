@@ -59,5 +59,11 @@
 
 </bean>
 
+
+<bean id="importBuses" class="com.wh.integration.service.impl.ImportBusesServiceImpl" >
+	<property name="url" value="${tfl.url}" />
+	<property name="appId" value="${tlf.appId}" />
+	<property name="secret" value="${tlf.secret}" />
+</bean>
 	
 </beans>
