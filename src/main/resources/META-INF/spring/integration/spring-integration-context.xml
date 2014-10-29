@@ -38,17 +38,16 @@
 	<!-- </int-twitter:inbound-channel-adapter> -->
 
 
-	<int:inbound-channel-adapter id="readFromTflOpenData" channel="extractMainData" ref="importBuses" method="readData" >
-		<int:poller fixed-rate="60000000"  max-messages-per-poll="1" />	
+	<int:inbound-channel-adapter id="readFromTflOpenData" channel="extractMainData" ref="importBuses" method="processData" >
+		<int:poller fixed-rate="36000000"    max-messages-per-poll="1" />
 	</int:inbound-channel-adapter>
 	
 		<int:logging-channel-adapter id="extractMainData"
 		logger-name="com.wh.integration.trigger.TfLTrigger" />
-	
-	
+
 	<int-twitter:mentions-inbound-channel-adapter
 		id="twitterInbound" twitter-template="twitterTemplate" channel="sourceExtractor">
-		<int:poller fixed-rate="60010" max-messages-per-poll="150" />
+		<int:poller fixed-rate="75010" fixed-delay="1000000" max-messages-per-poll="150" />
 	</int-twitter:mentions-inbound-channel-adapter>
 
 

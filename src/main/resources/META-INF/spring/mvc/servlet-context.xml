@@ -11,7 +11,8 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
-	<context:component-scan base-package="com.wh.integration.mvc.controller" />
+    <!--
+	<context:component-scan base-package="com.wh.integration" />
 
 	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"/>
 
@@ -75,10 +76,11 @@
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="defaultErrorView" value="errors/error" />
 	</bean>
-
+ -->
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving
 		up static resources in the ${webappRoot}/assets directory -->
-	<mvc:resources mapping="/assets/**" location="/assets/" cache-period="31556926"/>
+	<!--
+    <mvc:resources mapping="/assets/**" location="/assets/" cache-period="31556926"/>
 	<mvc:resources mapping="/wro/**"    location="/wro/"/>
 
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
@@ -105,4 +107,5 @@
 			</list>
 		</property>
 	</bean>
+	-->
 </beans>

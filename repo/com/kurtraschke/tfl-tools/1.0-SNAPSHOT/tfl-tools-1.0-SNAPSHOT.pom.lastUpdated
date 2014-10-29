@@ -1,0 +1,4 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sun Oct 26 09:09:25 GMT 2014
+https\://repo.springsource.org/milestone/.error=Could not transfer artifact com.kurtraschke\:tfl-tools\:pom\:1.0-SNAPSHOT from/to repo.springsource.org.milestone (https\://repo.springsource.org/milestone)\: sun.security.validator.ValidatorException\: PKIX path validation failed\: java.security.cert.CertPathValidatorException\: timestamp check failed
+@default-https\://repo.springsource.org/milestone/.lastUpdated=1414314565590

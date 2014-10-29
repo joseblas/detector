@@ -1,10 +1,19 @@
 package com.wh.integration.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.kurtraschke.tfl.tools.AgencyExtraData;
+import com.kurtraschke.tfl.tools.Translator;
+import com.wh.integration.service.ImportBusesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import uk.org.transxchange.TransXChange;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,22 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import uk.org.transxchange.TransXChange;
-
-import com.kurtraschke.tfl.tools.AgencyExtraData;
-import com.kurtraschke.tfl.tools.Translator;
-import com.wh.integration.service.ImportBusesService;
 
 public class ImportBusesServiceImpl implements ImportBusesService,InitializingBean {
 
@@ -47,14 +40,16 @@ public class ImportBusesServiceImpl implements ImportBusesService,InitializingBe
 	@Override
 	public String importBuses() {
 		log.info("Importing data from tfl");
-//		fetchData();
-
-			
-			readData();
+		fetchData();
+	    readData();
 		return new Date().toString();
 	}
 
-	
+	public String processData(){
+        fetchData();
+        readData();
+        return "ok";
+    }
 	
 	private String readData() {
 		JAXBContext jc;
@@ -65,7 +60,11 @@ public class ImportBusesServiceImpl implements ImportBusesService,InitializingBe
 
 	    List<File> inputFiles = new ArrayList<>();
 	    File file = new File(TMP_TFL+ File.separator+ "unzipped" + File.separator );
-	    
+
+        if(file == null){
+            return "No files";
+        }
+
 	    for (String s : file.list()) {
 	      File f = new File(TMP_TFL+ File.separator+ "unzipped" + File.separator );
 
